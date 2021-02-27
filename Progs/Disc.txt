@@ -1,0 +1,50 @@
+in
+pop rax
+in
+pop rbx
+in
+pop rcx
+
+push rbx
+push 2
+pow
+push 4
+push rax
+push rcx
+mult
+mult
+sub
+sqrt
+out
+hlt
+
+
+
+SquareEqSolver:
+
+	call :Disc
+	push rdx
+	push 0
+	jb :NOROOTS
+
+	push rdx
+	out
+	jmp :end
+
+	NOROOTS:
+		push -1
+		out
+		jmp :end
+
+	ZERO:
+		push 0
+		out
+		jmp :end
+
+	INFROOTS:
+		push -2
+		out
+		jmp :end
+
+	end:
+		ret

@@ -1,0 +1,189 @@
+; Запили комментарии +
+; Напиши код...
+
+start
+push 900
+pop [0]		; В 0-ой ячейке RAM хранится X_size
+push 600
+pop [1]		; В 1-ой ячейке RAM хранится Y_size
+in
+pop rcx		; В rcx - R
+
+
+push 3.14159	; В rdx - pi/4
+push 4
+segm
+pop rdx
+
+call :DrawCircle
+hlt
+
+DrawCircle:
+	CreateWindow 100 100 200	; Создаём окно в нашем цвете
+
+	push [0]
+	push 2
+	segm
+	pop rax		; В rax стартовая коор. X
+	
+	push [1]
+	push 2
+	segm
+	pop rbx		; В rbx стартовая коор. Y
+
+	push 0
+	pop [3]		; В 3-ей ячейке RAM лежит i
+	push 0.005
+	pop [4]		; В 4-ой ячейке RAM лежит step
+
+	cycle:
+		push [3]
+		cos
+		push rcx
+		mult
+		lround
+		pop [12]
+
+		push [3]
+		sin
+		push rcx
+		mult
+		lround
+		pop [11]
+
+		push 0
+		pop [5]		; В 5-ой ячейке лежит j
+		Nested_cycle_1:
+
+			push 0
+			pop [6]		; В 6-ой ячейке лежит t
+			Nested_cycle_2:
+
+				push 1
+				pop [7]
+
+				Nested_cycle_3:
+
+					call :HalfPartMaker
+
+					push [7]
+					push 1
+					add
+					pop [7]
+					push [7]
+					push 2
+					jbe :Nested_cycle_3
+
+				push [6]
+				push 1
+				add
+				pop [6]
+				push [6]
+				push 2
+				jbe :Nested_cycle_2
+
+			push [5]
+			push 1
+			add
+			pop [5]
+			push [5]
+			push 2
+			jbe :Nested_cycle_1
+
+		push [3]	; Увеличиваем i на step (0.05)
+		push [4]
+		add
+		pop [3]
+		push [3]	; Проверяем условие цикла
+		push rdx
+		jb :cycle
+
+		draw 100 200 100	; Отрисовываем заполненное в нашем цвете
+ret
+
+Adr_Counter:
+	push rax	; Кладём x_start
+	push [6]	; Кладём t
+	add
+	push -1
+	push [7]	; А это у нас k
+	pow
+	push [8]	
+	mult
+	add			; Кладём +- x/y_offset
+	pop [10]
+
+	push rbx	; Кладём y_start
+	push [5]	; Кладём j
+	sub
+	push [9]
+	sub			; Кладём +- y/x_offset
+	push [0]	; Кладём X_size
+	mult
+
+	push [10]
+	add
+	pop [10]
+
+	ret
+
+
+HalfPartMaker:
+	push 1
+	pop [13]
+	Nested_cycle_4:
+		push [11]		; Кладём x_offset
+		push -1
+		push [13]
+		pow
+		mult
+		pop [8]
+
+		push [12]		; Кладём y_offset
+		push -1
+		push [13]
+		pow
+		mult
+		pop [9]
+
+		call :Adr_Counter
+
+		push [10]
+		push [VRAM]
+		add
+		pop cat
+		push 1
+		pop [cat]
+
+		push [12]		; Кладём y_offset
+		push -1
+		push [13]
+		pow
+		mult
+		pop [8]
+		
+		push [11]		; Кладём x_offset
+		push -1
+		push [13]
+		pow
+		mult
+		pop [9]
+
+		call :Adr_Counter
+
+		push [10]
+		push [VRAM]
+		add
+		pop cat
+		push 1
+		pop [cat]
+
+	push [13]
+	push 1
+	add
+	pop [13]
+	push [13]
+	push 2
+	jbe :Nested_cycle_4
+
+ret

@@ -1,0 +1,116 @@
+start		;Author is a fool
+in
+pop rax		; Comments don't work
+in 			; 100%
+pop rbx
+in
+pop rcx
+
+call :SquareEqSolver
+	hlt
+
+SquareEqSolver:
+	push rax
+	push 0
+	je :1
+
+
+	call :Disc
+	push rdx
+	push 0
+	je :3
+	call :root_1
+	
+	3:
+	call :root_2
+	jmp :end
+	
+
+	1:
+		push rbx
+		push 0
+		je :2
+
+		push rcx
+		push -1
+		mult
+		push rbx
+		segm
+		out
+		jmp :end
+
+	2:
+		push rcx
+		push 0
+		je :next
+		call :ZERO_ROOTS
+
+		next:
+		call :INF_ROOTS
+
+	end:
+		ret
+
+
+Disc:
+
+	push rbx
+	push 2
+	pow
+	push 4
+	push rax
+	push rcx
+	mult
+	mult
+	sub
+	pop rdx
+
+	push rdx
+	push 0
+	jae :continue
+	call :Error
+
+	continue:
+		push rdx
+		sqrt
+		pop rdx
+
+		ret
+
+root_1:
+	push rbx
+	push -1
+	mult
+	push rdx
+	sub
+	push 2
+	segm
+	push rax
+	segm
+	out
+	ret
+
+root_2:
+	push rbx
+	push -1
+	mult
+	push rdx
+	add
+	push 2
+	segm
+	push rax
+	segm
+	out
+	ret
+
+Error:
+	err
+	hlt
+
+ZERO_ROOTS:
+	noroots
+	hlt
+
+INF_ROOTS:
+	infroots
+	hlt

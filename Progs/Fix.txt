@@ -1,0 +1,17 @@
+start
+
+push 5
+pop rax
+push 20
+pop rbx
+
+push rbx
+pop [rax]
+
+push [rax+-1]
+out
+push [rax]
+out
+push [rax+1]
+out
+hlt

@@ -1,0 +1,14 @@
+run: Stack.exe
+	Stack.exe 1 2 3 4 5
+
+Stack.exe: Stack_Main.o UnitTests.o Protection.o
+	g++ Stack_Main.o UnitTests.o Protection.o -o Stack.exe
+
+Stack_Main.o: Stack_Main.cpp
+	g++ -c Stack_Main.cpp -DSUPERDEBUG
+
+UnitTests.o: UnitTests.cpp
+	g++ -c UnitTests.cpp
+
+Protection.o: Protection.cpp
+	g++ -c Protection.cpp

@@ -1,0 +1,40 @@
+start
+push 1
+pop rax
+push 1
+pop rbx
+in
+pop rcx
+
+call :Factorial
+push rax
+out
+hlt
+
+Factorial:
+	push 0
+	push rcx
+	je :end
+
+	push 1
+	push rcx
+	je :end
+
+	push rax
+
+	push rbx
+	push 1
+	add
+	pop rbx
+
+	push rbx
+	mult
+	pop rax
+
+	push rbx
+	push rcx
+	je :end
+	call :Factorial
+	end:
+
+	ret
