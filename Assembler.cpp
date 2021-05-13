@@ -2,15 +2,16 @@
 
 int main (int argc, const char* argv[])
 {   
+    assert (argc > 1);
     text* program = ProgramConstructor ((char*) argv[1]);
     assert (program);
     
-    char* bin_buff = (char*) calloc (MAX_CODE_LEN,   sizeof(char));
+    char* bin_buff = (char*) calloc (MAX_CODE_LEN, sizeof(char));
     assert (bin_buff);
     
     lable*  lables = CreateLabels ();
     
-    for (int i = 0; i < NUM_ASM; i++)
+    for (int i = 0; i < 2; i++)
     {
         int ofs = 0;
         Sign_maker (bin_buff, &ofs);

@@ -13,7 +13,6 @@ const int MAX_LABLE_NAME   = 15;
 const int MAX_CODE_LEN     = 100000;  // For program->bin_buff
 const int MAX_COMAND_LEN   = 10;       
 const int MAX_NUM_LABLES   = 500;
-const int NUM_ASM          = 2;       // For number of calling Assembler()
 const int STACK_START_SIZE = 100;     // For arrays with names of comands
 const int NUM_REGISTERS    = 6;       // For arrays with names of registers
 const int VERSION          = 6;
@@ -27,7 +26,7 @@ const int MODE_WORD   = 1;
 
 // DEFINING COMMANDS
 #define DEF_CMD(name, num, arg, code)   \
-                CMD_##name = num,       \ 
+                CMD_##name = num,       \
 
 enum comands
 {

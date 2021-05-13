@@ -2,10 +2,10 @@ run_calc: Calculator.exe
 	Calculator.exe $(MY_CODE)
 
 Calculator.exe: Calculator.cpp Text_processing.cpp Stack\Stack_Main.cpp Stack\Protection.cpp CPU_header.h Commands.h
-	g++ -w CPU_header.h Calculator.cpp Text_processing.cpp Stack\Stack_Main.cpp Stack\Protection.cpp -o Calculator.exe
+	g++ -w Calculator.cpp Text_processing.cpp Stack\Stack_Main.cpp Stack\Protection.cpp -o Calculator.exe
 
 run_asm: Assembler.exe
 	Assembler.exe $(MY_CODE)
 
 Assembler.exe: $(MY_CODE) Assembler.cpp Text_processing.cpp CPU_header.h Commands.h
-	g++ -w CPU_header.h Assembler.cpp Text_processing.cpp -o Assembler.exe
+	g++ -w Assembler.cpp Text_processing.cpp -o Assembler.exe

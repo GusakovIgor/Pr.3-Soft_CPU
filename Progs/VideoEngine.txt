@@ -12,7 +12,7 @@ pop rcx		; В rcx - R
 
 push 3.14159	; В rdx - pi/4
 push 4
-segm
+div
 pop rdx
 
 call :DrawCircle
@@ -23,12 +23,12 @@ DrawCircle:
 
 	push [0]
 	push 2
-	segm
+	div
 	pop rax		; В rax стартовая коор. X
 	
 	push [1]
 	push 2
-	segm
+	div
 	pop rbx		; В rbx стартовая коор. Y
 
 	push 0

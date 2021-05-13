@@ -1,3 +1,4 @@
+/*** System ***/
 
 DEF_CMD (HLT,  0, 0, 
                     {
@@ -17,6 +18,9 @@ DEF_CMD (OUT,  2, 0,
                     printf ("\n%lg\n\n", StackPop (processor->stack));
                     processor->pc++;
                     })
+
+
+/*** Stack **/
 
 DEF_CMD (PUSH, 3, 2, 
                     {
@@ -48,6 +52,9 @@ DEF_CMD (POP,  4, 2,
                         processor->registers[processor->code[processor->pc - 1]] = temp;
                     })
 
+
+/*** Arithmetic ***/
+
 DEF_CMD (ADD,  5, 0, 
                     {
                     StackPush (processor->stack, StackPop(processor->stack) + StackPop(processor->stack));
@@ -67,7 +74,7 @@ DEF_CMD (MULT, 7, 0,
                     processor->pc++;
                     })
 
-DEF_CMD (SEGM, 8, 0, 
+DEF_CMD (DIV, 8, 0, 
                     {
                     double temp = StackPop (processor->stack);
                     if (temp != 0)
@@ -292,4 +299,3 @@ DEF_CMD (LROUND, 29, 0,
                        StackPush (processor->stack, lround(temp));
                        processor->pc += sizeof (char);     
                     })
-

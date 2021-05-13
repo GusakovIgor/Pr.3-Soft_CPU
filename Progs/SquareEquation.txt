@@ -35,7 +35,7 @@ SquareEqSolver:
 		push -1
 		mult
 		push rbx
-		segm
+		div
 		out
 		jmp :end
 
@@ -84,9 +84,9 @@ root_1:
 	push rdx
 	sub
 	push 2
-	segm
+	div
 	push rax
-	segm
+	div
 	out
 	ret
 
@@ -97,9 +97,9 @@ root_2:
 	push rdx
 	add
 	push 2
-	segm
+	div
 	push rax
-	segm
+	div
 	out
 	ret
 

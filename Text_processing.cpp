@@ -2,7 +2,6 @@
 
 text* ProgramConstructor (char* name)
 {   
-    
     text* program = (text*) calloc (1, sizeof(text));
     assert (program);
     
