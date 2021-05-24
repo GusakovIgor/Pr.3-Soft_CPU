@@ -230,7 +230,6 @@ void PushPopProcessing (char* bin_buff, int* ofs, char* temp_1, int count)
         
         bin_buff[*ofs] = mode;
         *ofs += sizeof(char);
-        //printf (" %d ", mode);
         
         if ((mode & 4)/4)
             temp_1++;
@@ -323,7 +322,6 @@ void ArgInsert (char* bin_buff, int* ofs, char* temp, int count)
     {   
         *((double*) (bin_buff + *ofs)) = atof(temp);
         *ofs += sizeof(double);
-        //printf ("%lg", atof(temp));
         
     }
     else
@@ -331,7 +329,6 @@ void ArgInsert (char* bin_buff, int* ofs, char* temp, int count)
         int reg_number = FindRegNumber (temp, count);
         bin_buff[*ofs] = reg_number;
         *ofs += sizeof(char);
-        //printf ("%d", reg_number);
     }
 }
 
@@ -385,7 +382,6 @@ void JmpProcessing (char* bin_buff, int* ofs, char* temp, int count, label* labe
     
     *(int*)(bin_buff + *ofs) = (cur_lable == -1) ?  -1 : labels[cur_lable].adr;
     *ofs += sizeof(int);
-    //printf (" %d", labels[cur_lable].adr);
 }
 
 
