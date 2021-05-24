@@ -1,12 +1,11 @@
-#include "TXLib.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include <memory.h>
 #include <ctype.h>
-#include "Stack/MyStack.h"
+#include "MyStack/Stack.h"
 
 const int MAX_FILENAME     = 30;      // For program->name
 const int MAX_LABLE_NAME   = 15;
@@ -24,7 +23,8 @@ const int pix_size         = 1;
 const int MODE_NUMBER = 0;
 const int MODE_WORD   = 1;
 
-// DEFINING COMMANDS
+
+/*** DEFINING COMMANDS ***/
 #define DEF_CMD(name, num, arg, code)   \
                 CMD_##name = num,       \
 
@@ -36,6 +36,7 @@ enum comands
 #undef DEF_CMD
 
 // END OF DEFINING COMMANDS
+
 
 enum registers {    VRAM = 0,
                     RAX = 1, 
@@ -49,48 +50,60 @@ enum registers {    VRAM = 0,
 struct text;
 struct CPU;
 struct FileHeader;
-struct lable;
+struct label;
 
 
-// Text_processing file
+/*** TextProcessing file ***/
+
 text* ProgramConstructor (char* name);
+void  ProgramDestructor  (text** program);
 
 size_t TextGetter   (text* program);
 size_t SizeGetter   (const char* name);
 size_t TextReader   (text* program, size_t size);
 
-size_t WordsCounter (char* text, size_t num_symbals);
-int CommentCleaner  (char* text, size_t num_symbals, int cur_symbal);
-char*  NameProcessing (char* name);
+size_t WordsCounter    (char* text, size_t num_symbals);
+int    CommentCleaner  (char* text, size_t num_symbals, int cur_symbal);
+char*  NameProcessing  (char* name);
+
 //---------------------------------------------------
 
 
-// Assembler file
-lable* CreateLabels ();
-void Assembler      (text* program, char* bin_buff, lable* lables, int ofs);
-void Sign_maker     (char* bin_buff, int* ofs);
-void MakeLable      (lable* lables, char* temp, char* check, int* ofs, int count);
-int  SearchLable    (lable* lables, char* temp);
-text* ProgramDestructor (text* program);
 
-void ComplicComProcessing   (char* buff, char* bin_buff, int* ofs, int* pos, char* temp, int* count, lable* lables, int num);                 
+/*** Assembler file ***/
+
+label* CreateLabels ();
+void Assembler      (text* program, char* bin_buff, label* labels, int ofs);
+void Sign_maker     (char* bin_buff, int* ofs);
+void MakeLable      (label* labels, char* temp, char* check, int* ofs, int count);
+int  SearchLable    (label* labels, char* temp);
+
+void ComplicComProcessing   (char* buff, char* bin_buff, int* ofs, int* pos, char* temp, int* count, label* labels, int num);                 
 void PushPopProcessing      (char* bin_buff, int* ofs, char* temp_1, int count);                // Thanks Uliana for that functions
-void JmpProcessing          (char* bin_buff, int* ofs, char* temp, int count, lable* lables);       // (I was trying to make it all in DEF_CMD macro)
+void JmpProcessing          (char* bin_buff, int* ofs, char* temp, int count, label* labels);       // (I was trying to make it all in DEF_CMD macro)
 void DrawProcessing         (char* buff, char* bin_buff, int* ofs, int*pos, char* temp, int* count);
 char ModeProcessing (char* temp_1, char* temp_2, int count);
 void ArgInsert      (char* bin_buff, int* ofs, char* temp, int count);
 int  FindRegNumber  (char* temp, int count);
+
 //--------------------------------------------------
 
-// Calculator file
+
+
+/*** Calculator file ***/
+
 CPU* CPU_Construct  (char* file_name);
 CPU* CPU_Destruct    (CPU* processor);
 void CodeReader      (CPU* processor, char* file_name);
 void SignatureCheck  (CPU* processor);
 void StackDebugPrint (CPU* processor);
-double ArgGetter     (CPU* processor, int mode, double* RAM);
+double  ArgGetter    (CPU* processor, int mode, double* RAM);
 double* RAM_Maker    ();
+
 //--------------------------------------------------
+
+
+/*** Structures ***/
 
 struct text
 {
@@ -121,7 +134,7 @@ struct FileHeader
 };
 
 
-struct lable
+struct label
 {
     int adr;
     char name[MAX_LABLE_NAME];

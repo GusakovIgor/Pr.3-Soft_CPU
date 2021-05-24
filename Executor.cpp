@@ -17,9 +17,10 @@ int main (int argc, const char* argv[])
     {
         switch ( (int) processor->code[processor->pc])
         {
-            #include "commands.h"
+            #include "Commands.h"
         }
     }
+
     #undef DEF_CMD
     
     processor = CPU_Destruct (processor);
@@ -35,7 +36,8 @@ CPU* CPU_Construct (char* file_name)
     CPU* processor = (CPU*) calloc (1, sizeof(CPU));
     
     CodeReader (processor, file_name);
-    
+
+
     processor->stack = StackConstruct (STACK_START_SIZE);
     processor->calls = StackConstruct (STACK_START_SIZE);
     processor->registers = (double*) calloc (NUM_REGISTERS + 1, sizeof(double));
@@ -58,6 +60,8 @@ CPU* CPU_Destruct (CPU* processor)
 void CodeReader (CPU* processor, char* file_name)
 {
     file_name = NameProcessing (file_name);
+
+    printf ("\nYou can see byte-code of your program in \"%s\"\n", file_name);
     
     FILE* file = fopen (file_name, "rb");
     
@@ -71,7 +75,7 @@ void CodeReader (CPU* processor, char* file_name)
 void SignatureCheck (CPU* processor)
 {
     printf ("%c%c", processor->code[0], processor->code[1]);
-    printf ("%d\n", *(int*)(processor->code + 4));              // Plus 4 cause memory distributor expands const char[3] to const char[4]
+    printf ("%d\n\n", *(int*)(processor->code + 4));              // Plus 4 cause memory distributor expands const char[3] to const char[4]
     assert (*(int*)(processor->code + 4) == VERSION);           // And only after that version goes
     processor->pc = sizeof(FileHeader);
 }
@@ -110,21 +114,19 @@ void StackDebugPrint (CPU* processor)
 double ArgGetter (CPU* processor, int mode, double* RAM)
 {
     double arg = 0;
-    if (mode & 1)
-        {
-            arg += processor->registers[processor->code[processor->pc++]];
-        }
-    if ((mode & 2)/2)
-        {
-            arg += *(double*)(processor->code + processor->pc);
-            processor->pc += sizeof(double);
-        }
-    if ((mode & 4)/4)
-        {
-            arg = *(RAM + (int) arg);
-        }
+    if (mode & 1 == 1)
+    {
+        arg += processor->registers[processor->code[processor->pc++]];
+    }
+    else if ((mode & 2) / 2 == 1)
+    {
+        arg += *(double*)(processor->code + processor->pc);
+        processor->pc += sizeof(double);
+    }
+    else if ((mode & 4) / 4 == 1)
+    {
+        arg = *(RAM + (int) arg);
+    }
         
     return arg;
 }
-
-

@@ -1,11 +1,9 @@
-run_calc: Calculator.exe
-	Calculator.exe $(MY_CODE)
+RunCPU: Assembler Executor
+	@./Assembler.out $(CODE)
+	@./Executor.out  $(CODE)
 
-Calculator.exe: Calculator.cpp Text_processing.cpp Stack\Stack_Main.cpp Stack\Protection.cpp CPU_header.h Commands.h
-	g++ -w Calculator.cpp Text_processing.cpp Stack\Stack_Main.cpp Stack\Protection.cpp -o Calculator.exe
+Executor: Executor.cpp TextProcessing.cpp MyStack/Stack.cpp MyStack/Protection.cpp CPU_header.h Commands.h
+	@g++ -w Executor.cpp TextProcessing.cpp MyStack/Stack.cpp MyStack/Protection.cpp -o Executor.out
 
-run_asm: Assembler.exe
-	Assembler.exe $(MY_CODE)
-
-Assembler.exe: $(MY_CODE) Assembler.cpp Text_processing.cpp CPU_header.h Commands.h
-	g++ -w Assembler.cpp Text_processing.cpp -o Assembler.exe
+Assembler: Assembler.cpp TextProcessing.cpp CPU_header.h Commands.h
+	@g++ -w Assembler.cpp TextProcessing.cpp -o Assembler.out

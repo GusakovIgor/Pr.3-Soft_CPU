@@ -3,14 +3,16 @@
 int main (int argc, const char* argv[])
 {   
     assert (argc > 1);
+
     text* program = ProgramConstructor ((char*) argv[1]);
     assert (program);
     
     char* bin_buff = (char*) calloc (MAX_CODE_LEN, sizeof(char));
     assert (bin_buff);
     
-    lable*  lables = CreateLabels ();
-    
+    label* labels = CreateLabels ();
+    assert (labels);
+
     for (int i = 0; i < 2; i++)
     {
         int ofs = 0;
@@ -19,33 +21,32 @@ int main (int argc, const char* argv[])
         bin_buff[ofs] = CMD_START;
         ofs += sizeof(char) + sizeof(int);
         
-        Assembler  (program, bin_buff, lables, ofs);
+        Assembler  (program, bin_buff, labels, ofs);
     }
     
-    free (lables);
+    free (labels);
     free (bin_buff);
-    
-    program = ProgramDestructor (program);
-    
+
+    ProgramDestructor (&program);
     return 0;
 }
 
 
-lable* CreateLabels ()
+label* CreateLabels ()
 {
-    lable*  lables = (lable*)  calloc (MAX_NUM_LABLES + 1, sizeof(lable));      // Plus 1 because user probably want to use labels 1-50
-    assert (lables);                                                            // if MAX_NUM_LABELS = 50, so we've got labels 0-50
+    label*  labels = (label*)  calloc (MAX_NUM_LABLES + 1, sizeof(label));      // Plus 1 because user probably want to use labels 1-50
+    assert (labels);                                                            // if MAX_NUM_LABELS = 50, so we've got labels 0-50
     
     for (int i = 0; i < MAX_NUM_LABLES + 1; i++)
     {
-        lables[i].adr = -1;
+        labels[i].adr = -1;
     }
     
-    return lables;
+    return labels;
 }
 
 
-void Assembler (text* program, char* bin_buff, lable* lables, int ofs)
+void Assembler (text* program, char* bin_buff, label* labels, int ofs)
 {
     static size_t iter = 0;
     
@@ -57,7 +58,7 @@ void Assembler (text* program, char* bin_buff, lable* lables, int ofs)
     int reg_number = 0;
     
     #define DEF_CMD(name, num, arg, code)                                           \
-        else if (strcmpi(temp, #name) == 0)                                         \
+        else if (strcasecmp(temp, #name) == 0)                                         \
         {                                                                           \
             if (CMD_##name == CMD_START)                                            \
             {                                                                       \
@@ -74,7 +75,7 @@ void Assembler (text* program, char* bin_buff, lable* lables, int ofs)
                     sscanf (program->buff + pos, "%s%n", temp, &com_len);           \
                     pos += com_len;                                                 \
                                                                                     \
-                    ComplicComProcessing (program->buff, bin_buff, &ofs, &pos, temp, &count, lables, num);\
+                    ComplicComProcessing (program->buff, bin_buff, &ofs, &pos, temp, &count, labels, num);\
                 }                                                                   \
                                                                                     \
             }                                                                       \
@@ -90,7 +91,7 @@ void Assembler (text* program, char* bin_buff, lable* lables, int ofs)
         {
             if (iter > 0)
                 continue;
-            MakeLable (lables, temp, check, &ofs, count + 1);    // count + 1 cause we counts from 0 and in debug user need from 1
+            MakeLable (labels, temp, check, &ofs, count + 1);    // count + 1 cause we counts from 0 and in debug user need from 1
         }
         #include "Commands.h"
         else
@@ -123,7 +124,7 @@ void Sign_maker (char* bin_buff, int* ofs)
 }
 
 
-void MakeLable (lable* lables, char* temp, char* check, int* ofs, int count)
+void MakeLable (label* labels, char* temp, char* check, int* ofs, int count)
 {
     int mode = -1;
     static int last_word_lable = 1;
@@ -159,25 +160,25 @@ void MakeLable (lable* lables, char* temp, char* check, int* ofs, int count)
         int cur_lable = atoi(temp);
         if (cur_lable <= last_word_lable)
         {
-            while (lables[last_word_lable].adr != -1)
+            while (labels[last_word_lable].adr != -1)
                 last_word_lable++;
             assert (last_word_lable < MAX_NUM_LABLES);
             
             
-            lables[last_word_lable].adr = lables[cur_lable].adr;
-            strcpy (lables[last_word_lable].name, lables[cur_lable].name);
-            strcpy (lables[cur_lable].name, "");
+            labels[last_word_lable].adr = labels[cur_lable].adr;
+            strcpy (labels[last_word_lable].name, labels[cur_lable].name);
+            strcpy (labels[cur_lable].name, "");
         }
-        lables[cur_lable].adr = *ofs;
+        labels[cur_lable].adr = *ofs;
     }
     else if (mode == MODE_WORD)
     {
-        while (lables[last_word_lable].adr != -1)
+        while (labels[last_word_lable].adr != -1)
             last_word_lable++;
         assert (last_word_lable < MAX_NUM_LABLES);
         
-        lables[last_word_lable].adr  =  *ofs;
-        strcpy(lables[last_word_lable].name, temp);
+        labels[last_word_lable].adr  =  *ofs;
+        strcpy(labels[last_word_lable].name, temp);
     }
     else
     {
@@ -187,11 +188,11 @@ void MakeLable (lable* lables, char* temp, char* check, int* ofs, int count)
 }
 
 
-int SearchLable (lable* lables, char* temp)
+int SearchLable (label* labels, char* temp)
 {
     for (int i = 0; i < MAX_NUM_LABLES + 1; i++)
     {
-        if (strcmp(temp, lables[i].name) == 0)
+        if (strcmp(temp, labels[i].name) == 0)
         {
             return i;
         }
@@ -200,7 +201,7 @@ int SearchLable (lable* lables, char* temp)
 }
 
 
-void ComplicComProcessing (char* buff, char* bin_buff, int* ofs, int* pos, char* temp, int* count, lable* lables, int num)
+void ComplicComProcessing (char* buff, char* bin_buff, int* ofs, int* pos, char* temp, int* count, label* labels, int num)
 {
     if (num == CMD_PUSH)
     {
@@ -212,13 +213,8 @@ void ComplicComProcessing (char* buff, char* bin_buff, int* ofs, int* pos, char*
     }
     else if ((CMD_JMP  <= num && num <=  CMD_JT) || num == CMD_CALL)
     {
-        JmpProcessing (bin_buff, ofs, temp, *count, lables);
+        JmpProcessing (bin_buff, ofs, temp, *count, labels);
     }
-    else if (num == CMD_DRAW || num == CMD_CREATEWINDOW)
-    {
-        DrawProcessing (buff, bin_buff, ofs, pos, temp, count);
-    }
-    
 }
 
 
@@ -283,31 +279,31 @@ char ModeProcessing (char* temp_1, char* temp_2, int count)
 
 int FindRegNumber (char* temp, int count)
 {
-    if (strcmpi(temp, "VRAM") == 0)
+    if (strcasecmp(temp, "VRAM") == 0)
     {
         return VRAM;
     }
-    else if (strcmpi(temp, "rax") == 0)
+    else if (strcasecmp(temp, "rax") == 0)
     {
         return RAX;
     }
-    else if (strcmpi(temp, "rbx") == 0)
+    else if (strcasecmp(temp, "rbx") == 0)
     {
         return RBX;
     }
-    else if (strcmpi(temp, "rcx") == 0)
+    else if (strcasecmp(temp, "rcx") == 0)
     {
         return RCX;
     }
-    else if (strcmpi(temp, "rdx") == 0)
+    else if (strcasecmp(temp, "rdx") == 0)
     {
         return RDX;
     }
-    else if (strcmpi(temp, "cat") == 0)
+    else if (strcasecmp(temp, "cat") == 0)
     {
         return CAT;
     }
-    else if (strcmpi(temp, "myau") == 0)
+    else if (strcasecmp(temp, "myau") == 0)
     {
         return MYAU;
     }
@@ -340,14 +336,14 @@ void ArgInsert (char* bin_buff, int* ofs, char* temp, int count)
 }
 
 
-void JmpProcessing (char* bin_buff, int* ofs, char* temp, int count, lable* lables)
+void JmpProcessing (char* bin_buff, int* ofs, char* temp, int count, label* labels)
 {
     int mode = -1;
     
     if (temp[0] != ':')
     {
         printf ("\nSyntax Error!\n");
-        printf ("Please enter lable in format \":x\", where x is integer (number of needed lable)\n");
+        printf ("Please enter label in format \":x\", where x is integer (number of needed label)\n");
         printf ("%s\n", temp);
         printf ("(in word %d)\n\n", count);
         assert (!"OK");
@@ -379,7 +375,7 @@ void JmpProcessing (char* bin_buff, int* ofs, char* temp, int count, lable* labl
     }
     else if (mode == MODE_WORD)
     {
-        cur_lable = SearchLable (lables, temp);
+        cur_lable = SearchLable (labels, temp);
     }
     else
     {
@@ -387,9 +383,9 @@ void JmpProcessing (char* bin_buff, int* ofs, char* temp, int count, lable* labl
         assert (!"OK");
     }
     
-    *(int*)(bin_buff + *ofs) = (cur_lable == -1) ?  -1 : lables[cur_lable].adr;
+    *(int*)(bin_buff + *ofs) = (cur_lable == -1) ?  -1 : labels[cur_lable].adr;
     *ofs += sizeof(int);
-    //printf (" %d", lables[cur_lable].adr);
+    //printf (" %d", labels[cur_lable].adr);
 }
 
 
@@ -411,27 +407,11 @@ void DrawProcessing (char* buff, char* bin_buff, int* ofs, int*pos, char* temp, 
     
     *(int*)(bin_buff + *ofs) = R;
     *ofs += sizeof(int);
-    //printf (" %d", R);
     
     *(int*)(bin_buff + *ofs) = G;
     *ofs += sizeof(int);
-    //printf (" %d", G);
     
     *(int*)(bin_buff + *ofs) = B;
     *ofs += sizeof(int);
-    //printf (" %d", B);
     
 }
-
-
-text* ProgramDestructor (text* program)
-{
-    free (program->name);
-    free (program->buff);
-    free (program);
-    
-    program  = NULL;
-    return program;
-}
-
-

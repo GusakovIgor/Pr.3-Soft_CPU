@@ -7,14 +7,26 @@ text* ProgramConstructor (char* name)
     
     program->name = (char*) calloc (MAX_FILENAME, sizeof(char));
     assert (program->name);
-    program->name = name;
+
+    strcpy (program->name, name);
     assert (strlen(program->name) < MAX_FILENAME);
     
     size_t num_symb = TextGetter (program);
+    
     program->num_words = WordsCounter (program->buff, num_symb);
+    
     program->name = NameProcessing (program->name);
     
     return program;
+}
+
+void ProgramDestructor (text** program)
+{
+    free ((*program)->name);
+    free ((*program)->buff);
+    free (*program);
+
+    *program = NULL;
 }
 
 
@@ -30,8 +42,6 @@ char* NameProcessing (char* name)
     {
         name[i] = extension[j];
     }
-    
-    printf ("\nYou can see byte-code of your program in file: %s\n", name);
 
     return name;
 }

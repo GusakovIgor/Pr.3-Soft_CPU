@@ -5,16 +5,20 @@
 #include <string.h>
 #include <time.h>
 
-enum errors   { HASH_PROTECTION_ERROR = -7, CANARY_STACK_PROTECTION_ERROR, CANARY_ARRAY_PROTECTION_ERROR, 
+enum errors   { HASH_PROTECTION_ERROR = -7, 
+				CANARY_STACK_PROTECTION_ERROR, 
+				CANARY_ARRAY_PROTECTION_ERROR, 
                 CONSTRUCTION_ERROR, MEMORY_ERROR, SIZE_ERROR, 
                 CHECK_IF_EMPTY_ERROR, FILLING_ERROR, I_AM_OK };
                                              
 typedef unsigned long long can_type;
 #define CANARY_SIZE sizeof(can_type)
 
+// Array Canaries
 #define CANARY_1L ((can_type*)((char*)stk->array - CANARY_SIZE))
 #define CANARY_1R ((can_type*)((char*)stk->array + stk->capacity*sizeof(double)))
 
+// Hole Stack Canaries
 #define CANARY_2L ((can_type*)((char*)stk - CANARY_SIZE))
 #define CANARY_2R ((can_type*)((char*)stk + sizeof(MyStack)))
 

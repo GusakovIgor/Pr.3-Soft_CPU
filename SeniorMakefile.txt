@@ -1,3 +1,0 @@
-Use_CPU:
-	make -f Makefile.txt MY_CODE=Progs\VideoEngine.txt run_asm
-	make -f Makefile.txt MY_CODE=Progs\VideoEngine.txt run_calc

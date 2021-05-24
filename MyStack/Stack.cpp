@@ -1,56 +1,5 @@
-#include "MyStack.h"
+#include "Stack.h"
 
-/*int main (int argc, const char* argv[])
-{
-    LogsClear ();
-    StackOK(NULL);
-    
-    #ifdef SUPERDEBUG
-    if (argc > 1)
-    {
-        Unit_Tests (argc, argv);
-    }
-    else
-    {
-        printf ("Please, enter one of those commands:");
-        Help_Print();
-        printf ("Or turn SUPERDEBUG mode off");
-    }
-    
-    #else
-    size_t capacity = 0;
-    scanf ("%u", &capacity);
-    assert(capacity >= MIN_CAPACITY);
-      
-    MyStack* stk = StackConstruct (capacity);
-    assert (stk->size == 0);
-    assert (stk->capacity == capacity);
-    */
-    /*Breaking stack
-    stk->size = 3;
-    ASSERT_OK (stk, "main");
-    printf("Element in empty array = %lg", StackPop(stk));
-    */
-    
-    /*StackPush(stk, 3);
-    StackPush(stk, 4);
-    StackPush(stk, 1);
-    StackPush(stk, 5);
-
-    StackPop(stk);
-    StackPop(stk);
-    StackPop(stk);
-    StackPush(stk, 9);
-
-    ASSERT_OK(stk, "main");
-
-    stk = StackDestruct (stk);
-    assert (stk == NULL);
-    
-    #endif
-    
-    return 0;
-}*/
 
 //-------------------------------------------------------------------------------------------------------
 //! StackConstruct function:
@@ -74,8 +23,8 @@ MyStack* StackConstruct (size_t capacity)
     stk = (MyStack*)((char*)stk + CANARY_SIZE);
     assert (stk != NULL);
     
-    *CANARY_2L = 0XBEEF;                  // Making left canary C0FFEE
-    *CANARY_2R = 0XBEEF;                  // And right too
+    *CANARY_2L = 0xBEEF;                  // Making second left canary BEEF
+    *CANARY_2R = 0xBEEF;                  // And right too
     
     *stk = {0, true, 0, capacity, NULL};
     
@@ -83,8 +32,8 @@ MyStack* StackConstruct (size_t capacity)
     assert (stk->array != NULL);
     stk->array = (double*)((char*)stk->array + CANARY_SIZE);                                   // Shifting pointer on 1 BYTE right (to the array)
     
-    *CANARY_1L = 0XC0FFEE;                  // Making left canary C0FFEE
-    *CANARY_1R = 0XC0FFEE;                  // And right too
+    *CANARY_1L = 0xC0FFEE;                  // Making left canary C0FFEE
+    *CANARY_1R = 0xC0FFEE;                  // And right too
 
     StackClear (stk);
     
@@ -110,7 +59,7 @@ MyStack* StackDestruct (MyStack* stk)
     
     free (CANARY_1L);
     free (CANARY_2L);
-    
+
     return NULL;
 }
 
@@ -167,7 +116,6 @@ void StackPush (MyStack* stk, double elem)
     
     if (stk->is_empty)
     {
-        assert (!isnan(elem));
         stk->array[stk->size] = elem;
         stk->is_empty = false;
     }
@@ -248,7 +196,7 @@ double StackPop (MyStack* stk)
 //-------------------------------------------------------------------------------------------------------
 double StackTop (MyStack* stk)
 {
-    ASSERT_OK(stk, "StackTop");
+    ASSERT_OK (stk, "StackTop");
     
     return stk->array[stk->size];
 }
@@ -286,11 +234,14 @@ void StackExpansion (MyStack* stk)
     
     stk->capacity = new_size;
     
+    // HashMaker (stk)
+    // It seems to be a hack method
+    // If we counting hash before restoring canaries ASSERT won't be OK
+
+    *CANARY_1L = 0xC0FFEE;
+    *CANARY_1R = 0xC0FFEE;
+    
     HashMaker (stk);
-    
-    *CANARY_1L = 0XC0FFEE;
-    *CANARY_1R = 0XC0FFEE;
-    
     ASSERT_OK(stk, "StackExpansion");
 }
 
@@ -324,8 +275,8 @@ void StackFree (MyStack* stk)
       
       HashMaker (stk);
       
-      *CANARY_1L = 0XC0FFEE;
-      *CANARY_1R = 0XC0FFEE;
+      *CANARY_1L = 0xC0FFEE;
+      *CANARY_1R = 0xC0FFEE;
       
       ASSERT_OK(stk, "StackFree");
 }
