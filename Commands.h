@@ -261,63 +261,63 @@ DEF_CMD (INFROOTS, 26, 0,
                     processor->pc += sizeof(char);
                     })
 
-DEF_CMD (DRAW, 27, 3,
-                    {
-                    printf ("VSE SLOGHNO\n");
-                    const int X_size = RAM[0];
-                    const int Y_size = RAM[1];
+// DEF_CMD (DRAW, 27, 3,
+//                     {
+//                     printf ("VSE SLOGHNO\n");
+//                     const int X_size = RAM[0];
+//                     const int Y_size = RAM[1];
                     
-                    processor->pc += sizeof(char);
-                    int R = *(int*)(processor->code + processor->pc);
+//                     processor->pc += sizeof(char);
+//                     int R = *(int*)(processor->code + processor->pc);
                     
-                    processor->pc += sizeof(int);
-                    int G = *(int*)(processor->code + processor->pc);
+//                     processor->pc += sizeof(int);
+//                     int G = *(int*)(processor->code + processor->pc);
                     
-                    processor->pc += sizeof(int);
-                    int B = *(int*)(processor->code + processor->pc);
+//                     processor->pc += sizeof(int);
+//                     int B = *(int*)(processor->code + processor->pc);
                     
-                    processor->pc += sizeof(int);
+//                     processor->pc += sizeof(int);
                     
-                    RGBQUAD* BUFF = txVideoMemory();
-                    assert (BUFF);
-                    txLock();
-                    for (int i = 0; i < X_size*Y_size; i++)
-                        if (VRAM[i])
-                        {
-                            (*(BUFF + i)).rgbRed   = R;
-                            (*(BUFF + i)).rgbGreen = G;
-                            (*(BUFF + i)).rgbBlue  = B;
-                        }
-                    txUnlock();
-                    txRedrawWindow();
+//                     RGBQUAD* BUFF = txVideoMemory();
+//                     assert (BUFF);
+//                     txLock();
+//                     for (int i = 0; i < X_size*Y_size; i++)
+//                         if (VRAM[i])
+//                         {
+//                             (*(BUFF + i)).rgbRed   = R;
+//                             (*(BUFF + i)).rgbGreen = G;
+//                             (*(BUFF + i)).rgbBlue  = B;
+//                         }
+//                     txUnlock();
+//                     txRedrawWindow();
                     
-                    })
+//                     })
 
-DEF_CMD (CREATEWINDOW, 28, 3,
-                    {
-                    const int X_size = RAM[0];
-                    const int Y_size = RAM[1];
+// DEF_CMD (CREATEWINDOW, 28, 3,
+//                     {
+//                     const int X_size = RAM[0];
+//                     const int Y_size = RAM[1];
                     
-                    //txCreateWindow (X_size, Y_size);
+//                     //txCreateWindow (X_size, Y_size);
                     
-                    Application* App = (Application*) calloc (1, sizeof(Application));
+//                     Application* App = (Application*) calloc (1, sizeof(Application));
 
-                    SDL_Init (App);
+//                     SDL_Init (App);
 
-                    processor->pc += sizeof(char);
-                    int R = *(int*)(processor->code + processor->pc);
+//                     processor->pc += sizeof(char);
+//                     int R = *(int*)(processor->code + processor->pc);
                     
-                    processor->pc += sizeof(int);
-                    int G = *(int*)(processor->code + processor->pc);
+//                     processor->pc += sizeof(int);
+//                     int G = *(int*)(processor->code + processor->pc);
                     
-                    processor->pc += sizeof(int);
-                    int B = *(int*)(processor->code + processor->pc);
+//                     processor->pc += sizeof(int);
+//                     int B = *(int*)(processor->code + processor->pc);
                     
-                    txSetFillColor (RGB(R, G, B));
-                    txRectangle (0, Y_size, X_size, 0);
+//                     txSetFillColor (RGB(R, G, B));
+//                     txRectangle (0, Y_size, X_size, 0);
                     
-                    processor->pc += sizeof (int);
-                    })
+//                     processor->pc += sizeof (int);
+//                     })
                     
 DEF_CMD (LROUND, 29, 0,
                     {
